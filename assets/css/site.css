@@ -57,6 +57,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
 .wrap--wide{max-width:1320px}
 .section{padding-block:var(--sect)}
+section[id],.hero[id]{scroll-margin-top:84px}
 .section--tint{background:var(--sand-soft)}
 .section--dark{background:var(--brown-800);color:var(--sand-soft)}
 .section--dark h2,.section--dark h3{color:#fff}
