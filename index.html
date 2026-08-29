@@ -184,6 +184,25 @@
   </div>
 </section>
 
+<!-- ================= CONTEÚDO / VÍDEOS ================= -->
+<section class="section section--dark" id="conteudo">
+  <div class="wrap wrap--wide">
+    <div class="conteudo__head reveal">
+      <div>
+        <p class="eyebrow">Educação emocional</p>
+        <h2>A equipe compartilha o que sabe</h2>
+        <p class="lead">Vídeos curtos sobre ansiedade, o primeiro passo na terapia e o que a ciência mostra — direto de quem atende no Instituto.</p>
+      </div>
+      <a class="textlink" href="https://www.instagram.com/institutolifemind/" target="_blank" rel="noopener">Ver mais no @institutolifemind</a>
+    </div>
+    <div class="vrail-wrap reveal">
+      <button class="vrail__nav vrail__nav--prev" type="button" aria-label="Vídeos anteriores">‹</button>
+      <ol class="vrail" id="vrail" aria-label="Vídeos do Instituto Life Mind"></ol>
+      <button class="vrail__nav vrail__nav--next" type="button" aria-label="Próximos vídeos">›</button>
+    </div>
+  </div>
+</section>
+
 <!-- ================= HOW IT WORKS ================= -->
 <section class="section section--tint" id="como-funciona">
   <div class="wrap">
@@ -383,6 +402,19 @@
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.7 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6L9 5.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.2.2 2 3.1 5 4.3 2.5 1 3 .8 3.6.8.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4 0-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2z"/></svg>
 </a>
 
+<div class="vlb" id="vlb" hidden role="dialog" aria-modal="true" aria-label="Player de vídeo">
+  <button class="vlb__close" id="vlb-close" type="button" aria-label="Fechar">✕</button>
+  <button class="vlb__arrow vlb__arrow--prev" id="vlb-prev" type="button" aria-label="Vídeo anterior">‹</button>
+  <button class="vlb__arrow vlb__arrow--next" id="vlb-next" type="button" aria-label="Próximo vídeo">›</button>
+  <div class="vlb__stage">
+    <video id="vlb-video" playsinline preload="none" controls controlslist="nodownload noremoteplayback noplaybackrate" disablepictureinpicture></video>
+    <div class="vlb__meta">
+      <span id="vlb-title"></span>
+      <a class="btn btn--wa" id="vlb-cta" href="#" target="_blank" rel="noopener">Agendar atendimento</a>
+    </div>
+  </div>
+</div>
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -564,6 +596,121 @@
     document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
   } else {
     document.querySelectorAll(".reveal").forEach(function(el){el.classList.add("is-in");});
+  }
+
+  /* ---------- conteúdo: vídeos ---------- */
+  var VIDEOS=[
+    {slug:"por-que-ser-psicologo",featured:true,dur:"0:56",tag:"Bastidores",
+     kicker:"A equipe responde",title:"Por que você escolheu ser psicólogo?",
+     desc:"O que levou cada psicólogo do Instituto a essa profissão.",who:null},
+    {slug:"terapia-sem-rigidez",dur:"0:44",kicker:"Como é a terapia",
+     title:"A terapia não precisa ser rígida nem solitária",
+     desc:"Gustavo Santos sobre construir, junto, um espaço sem julgamento.",
+     who:{name:"Gustavo Santos",slug:"gustavo-santos",img:"gustavo"}},
+    {slug:"pensamentos-que-nao-silenciam",dur:"0:29",kicker:"Ansiedade e rotina",
+     title:"Quando os pensamentos não silenciam",
+     desc:"Aline Schelbauer sobre trocar a busca por um milagre pelas ferramentas certas.",
+     who:{name:"Aline Schelbauer",slug:"aline-schelbauer",img:"aline"}},
+    {slug:"o-primeiro-passo",dur:"0:37",kicker:"Começar",
+     title:"Você não precisa ter as palavras certas para começar",
+     desc:"Paula Brenneisen sobre procurar terapia sem ter tudo pronto ou organizado.",
+     who:{name:"Paula Brenneisen",slug:"paula-brenneisen",img:"paula"}},
+    {slug:"conversa-muda-o-cerebro",dur:"1:45",kicker:"Ciência da terapia",
+     title:"Uma conversa pode mudar o seu cérebro?",
+     desc:"O que exames de imagem mostram antes e depois da terapia, na depressão.",
+     who:{name:"Paula Brenneisen",slug:"paula-brenneisen",img:"paula"}}
+  ];
+  var vrail=document.getElementById("vrail");
+  if(vrail){
+    vrail.innerHTML=VIDEOS.map(function(v,i){
+      var who=v.who?'<span class="vcard__who"><img src="assets/img/'+v.who.img+'-sm.jpg" alt="" width="22" height="22">'+v.who.name+'</span>':'';
+      var tag=v.featured?'<span class="vcard__tag">Destaque</span>':'';
+      var body=v.featured?('<span class="vcard__title">'+v.desc+'</span>'):('<span class="vcard__title">'+v.title+'</span>'+who);
+      return '<li class="vcard'+(v.featured?' vcard--featured':'')+'">'+
+        '<button class="vcard__btn" type="button" data-i="'+i+'" aria-label="Assistir: '+v.title+'">'+
+          '<span class="vcard__media"><picture>'+
+            '<source type="image/webp" srcset="assets/video/poster-'+v.slug+'.webp">'+
+            '<img src="assets/video/poster-'+v.slug+'.jpg" alt="" width="720" height="947" loading="lazy"></picture>'+
+            tag+'<span class="vcard__dur">'+v.dur+'</span>'+
+            '<span class="vcard__play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'+
+          '</span>'+
+          '<span class="vcard__txt"><span class="vcard__kicker">'+v.kicker+'</span>'+body+'</span>'+
+        '</button></li>';
+    }).join("");
+
+    var lb=document.getElementById("vlb"),
+        lbv=document.getElementById("vlb-video"),
+        lbT=document.getElementById("vlb-title"),
+        lbCta=document.getElementById("vlb-cta"),
+        cur=0, lastFocus=null;
+
+    function openLB(i){
+      cur=(i+VIDEOS.length)%VIDEOS.length;
+      var v=VIDEOS[cur];
+      lbv.pause();
+      lbv.setAttribute("poster","assets/video/poster-"+v.slug+".jpg");
+      lbv.src="assets/video/"+v.slug+".mp4";
+      lbT.textContent=v.kicker+(v.who?(" · "+v.who.name):"");
+      var msg="Olá! Vi o vídeo “"+v.title+"” no site e gostaria de agendar um atendimento";
+      if(v.who) msg+=" com "+v.who.name;
+      lbCta.href=wa+encodeURIComponent(msg+".");
+      lbCta.textContent=v.who?("Agendar com "+v.who.name.split(" ")[0]):"Agendar atendimento";
+      if(lb.hidden){ lastFocus=document.activeElement; lb.hidden=false; document.body.style.overflow="hidden"; }
+      lbv.play().catch(function(){});
+      document.getElementById("vlb-close").focus();
+    }
+    function closeLB(){
+      lbv.pause(); lbv.removeAttribute("src"); lbv.load();
+      lb.hidden=true; document.body.style.overflow="";
+      if(lastFocus) lastFocus.focus();
+    }
+    var justDragged=false;
+    vrail.addEventListener("click",function(e){
+      if(justDragged) return;
+      var b=e.target.closest(".vcard__btn"); if(b) openLB(+b.dataset.i);
+    });
+    document.getElementById("vlb-close").addEventListener("click",closeLB);
+    lb.addEventListener("click",function(e){ if(e.target===lb) closeLB(); });
+    document.getElementById("vlb-prev").addEventListener("click",function(){openLB(cur-1);});
+    document.getElementById("vlb-next").addEventListener("click",function(){openLB(cur+1);});
+    addEventListener("keydown",function(e){
+      if(lb.hidden) return;
+      if(e.key==="Escape") closeLB();
+      else if(e.key==="ArrowLeft") openLB(cur-1);
+      else if(e.key==="ArrowRight") openLB(cur+1);
+    });
+
+    /* rail: arrows + drag-to-scroll */
+    var prev=document.querySelector(".vrail__nav--prev"),
+        next=document.querySelector(".vrail__nav--next");
+    function step(){ return (vrail.querySelector(".vcard")||{}).offsetWidth+24 || 260; }
+    function syncNav(){
+      if(!prev) return;
+      prev.disabled=vrail.scrollLeft<8;
+      next.disabled=vrail.scrollLeft+vrail.clientWidth>=vrail.scrollWidth-8;
+    }
+    if(prev){
+      prev.addEventListener("click",function(){vrail.scrollBy({left:-step()*2,behavior:reduce?"auto":"smooth"});});
+      next.addEventListener("click",function(){vrail.scrollBy({left:step()*2,behavior:reduce?"auto":"smooth"});});
+      vrail.addEventListener("scroll",syncNav,{passive:true}); syncNav();
+      addEventListener("resize",syncNav);
+    }
+    var down=false,sx=0,sl=0;
+    vrail.addEventListener("pointerdown",function(e){
+      if(e.pointerType==="touch"||e.button!==0) return;
+      down=true;justDragged=false;sx=e.clientX;sl=vrail.scrollLeft;
+      vrail.style.cursor="grabbing";
+    });
+    vrail.addEventListener("pointermove",function(e){
+      if(!down) return;
+      var d=e.clientX-sx;
+      if(Math.abs(d)>8){ justDragged=true; vrail.scrollLeft=sl-d; }
+    });
+    function endDrag(){ down=false; vrail.style.cursor="grab"; setTimeout(function(){justDragged=false;},0); }
+    vrail.addEventListener("pointerup",endDrag);
+    vrail.addEventListener("pointercancel",endDrag);
+    vrail.addEventListener("pointerleave",function(){ if(down) endDrag(); });
+    vrail.style.cursor="grab";
   }
 
   /* ---------- map facade ---------- */
