@@ -195,10 +195,16 @@
       </div>
       <a class="textlink" href="https://www.instagram.com/institutolifemind/" target="_blank" rel="noopener">Ver mais no @institutolifemind</a>
     </div>
-    <div class="vrail-wrap reveal">
-      <button class="vrail__nav vrail__nav--prev" type="button" aria-label="Vídeos anteriores">‹</button>
-      <ol class="vrail" id="vrail" aria-label="Vídeos do Instituto Life Mind"></ol>
-      <button class="vrail__nav vrail__nav--next" type="button" aria-label="Próximos vídeos">›</button>
+    <div class="vloop reveal">
+      <button class="vloop__nav vloop__nav--prev" type="button" aria-label="Vídeo anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="vloop__mask">
+        <ol class="vloop__track" id="vloop-track" aria-label="Vídeos do Instituto Life Mind"></ol>
+      </div>
+      <button class="vloop__nav vloop__nav--next" type="button" aria-label="Próximo vídeo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -402,16 +408,23 @@
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.7 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.6L9 5.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.2.2 2 3.1 5 4.3 2.5 1 3 .8 3.6.8.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4 0-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2z"/></svg>
 </a>
 
-<div class="vlb" id="vlb" hidden role="dialog" aria-modal="true" aria-label="Player de vídeo">
-  <button class="vlb__close" id="vlb-close" type="button" aria-label="Fechar">✕</button>
-  <button class="vlb__arrow vlb__arrow--prev" id="vlb-prev" type="button" aria-label="Vídeo anterior">‹</button>
-  <button class="vlb__arrow vlb__arrow--next" id="vlb-next" type="button" aria-label="Próximo vídeo">›</button>
-  <div class="vlb__stage">
-    <video id="vlb-video" playsinline preload="none" controls controlslist="nodownload noremoteplayback noplaybackrate" disablepictureinpicture></video>
-    <div class="vlb__meta">
-      <span id="vlb-title"></span>
-      <a class="btn btn--wa" id="vlb-cta" href="#" target="_blank" rel="noopener">Agendar atendimento</a>
+<div class="vpop" id="vpop" hidden role="dialog" aria-modal="true" aria-label="Vídeos do Instituto Life Mind">
+  <button class="vpop__close" id="vpop-close" type="button" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <button class="vpop__arrow vpop__arrow--prev" id="vpop-prev" type="button" aria-label="Vídeo anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <button class="vpop__arrow vpop__arrow--next" id="vpop-next" type="button" aria-label="Próximo vídeo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+  <div class="vpop__stagewrap">
+    <div class="vpop__viewport"><ol class="vpop__track" id="vpop-track"></ol></div>
+    <div class="vpop__bar">
+      <span class="vpop__label" id="vpop-label"></span>
+      <a class="btn btn--wa" id="vpop-cta" href="#" target="_blank" rel="noopener">Agendar atendimento</a>
     </div>
+    <ol class="vpop__thumbs" id="vpop-thumbs" aria-label="Selecionar vídeo"></ol>
   </div>
 </div>
 
@@ -620,97 +633,179 @@
      desc:"O que exames de imagem mostram antes e depois da terapia, na depressão.",
      who:{name:"Paula Brenneisen",slug:"paula-brenneisen",img:"paula"}}
   ];
-  var vrail=document.getElementById("vrail");
-  if(vrail){
-    vrail.innerHTML=VIDEOS.map(function(v,i){
+  var N=VIDEOS.length;
+  var track=document.getElementById("vloop-track");
+  if(track){
+    /* ---- infinite loop carousel ---- */
+    function cardHTML(v,idx){
       var who=v.who?'<span class="vcard__who"><img src="assets/img/'+v.who.img+'-sm.jpg" alt="" width="22" height="22">'+v.who.name+'</span>':'';
       var tag=v.featured?'<span class="vcard__tag">Destaque</span>':'';
       var body=v.featured?('<span class="vcard__title">'+v.desc+'</span>'):('<span class="vcard__title">'+v.title+'</span>'+who);
       return '<li class="vcard'+(v.featured?' vcard--featured':'')+'">'+
-        '<button class="vcard__btn" type="button" data-i="'+i+'" aria-label="Assistir: '+v.title+'">'+
-          '<span class="vcard__media"><picture>'+
-            '<source type="image/webp" srcset="assets/video/poster-'+v.slug+'.webp">'+
-            '<img src="assets/video/poster-'+v.slug+'.jpg" alt="" width="720" height="947" loading="lazy"></picture>'+
+        '<button class="vcard__btn" type="button" data-i="'+idx+'" aria-label="Assistir: '+v.title+'">'+
+          '<span class="vcard__media" style="background-image:url(assets/video/poster-'+v.slug+'.webp)" role="img" aria-label="'+v.title+'">'+
             tag+'<span class="vcard__dur">'+v.dur+'</span>'+
             '<span class="vcard__play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'+
           '</span>'+
           '<span class="vcard__txt"><span class="vcard__kicker">'+v.kicker+'</span>'+body+'</span>'+
         '</button></li>';
-    }).join("");
+    }
+    var SETS=5, h="";
+    for(var s=0;s<SETS;s++) for(var i=0;i<N;i++) h+=cardHTML(VIDEOS[i],i);
+    track.innerHTML=h;
 
-    var lb=document.getElementById("vlb"),
-        lbv=document.getElementById("vlb-video"),
-        lbT=document.getElementById("vlb-title"),
-        lbCta=document.getElementById("vlb-cta"),
-        cur=0, lastFocus=null;
+    var setW=0,cardStep=0,ready=false;
+    function measure(){
+      var c=track.children[0]; if(!c) return;
+      var g=parseFloat(getComputedStyle(track).columnGap||getComputedStyle(track).gap)||16;
+      cardStep=c.getBoundingClientRect().width+g;
+      setW=cardStep*N;
+      track.scrollLeft=setW*2;   // start in the middle set
+      ready=true;
+    }
+    var wrapRaf=0;
+    function wrapScroll(){
+      if(!ready||!setW) return;
+      var sl=track.scrollLeft;
+      if(sl<setW){ track.scrollLeft=sl+setW; }
+      else if(sl>setW*3.5){ track.scrollLeft=sl-setW; }
+    }
+    track.addEventListener("scroll",function(){
+      if(wrapRaf) return;
+      wrapRaf=requestAnimationFrame(function(){ wrapRaf=0; wrapScroll(); });
+    },{passive:true});
 
-    function openLB(i){
-      cur=(i+VIDEOS.length)%VIDEOS.length;
-      var v=VIDEOS[cur];
-      lbv.pause();
-      lbv.setAttribute("poster","assets/video/poster-"+v.slug+".jpg");
-      lbv.src="assets/video/"+v.slug+".mp4";
-      lbT.textContent=v.kicker+(v.who?(" · "+v.who.name):"");
-      var msg="Olá! Vi o vídeo “"+v.title+"” no site e gostaria de agendar um atendimento";
-      if(v.who) msg+=" com "+v.who.name;
-      lbCta.href=wa+encodeURIComponent(msg+".");
-      lbCta.textContent=v.who?("Agendar com "+v.who.name.split(" ")[0]):"Agendar atendimento";
-      if(lb.hidden){ lastFocus=document.activeElement; lb.hidden=false; document.body.style.overflow="hidden"; }
-      lbv.play().catch(function(){});
-      document.getElementById("vlb-close").focus();
+    function nudge(dir){
+      var by=cardStep*(window.innerWidth<640?1:2);
+      track.scrollBy({left:dir*by,behavior:reduce?"auto":"smooth"});
     }
-    function closeLB(){
-      lbv.pause(); lbv.removeAttribute("src"); lbv.load();
-      lb.hidden=true; document.body.style.overflow="";
-      if(lastFocus) lastFocus.focus();
-    }
-    var justDragged=false;
-    vrail.addEventListener("click",function(e){
-      if(justDragged) return;
-      var b=e.target.closest(".vcard__btn"); if(b) openLB(+b.dataset.i);
-    });
-    document.getElementById("vlb-close").addEventListener("click",closeLB);
-    lb.addEventListener("click",function(e){ if(e.target===lb) closeLB(); });
-    document.getElementById("vlb-prev").addEventListener("click",function(){openLB(cur-1);});
-    document.getElementById("vlb-next").addEventListener("click",function(){openLB(cur+1);});
-    addEventListener("keydown",function(e){
-      if(lb.hidden) return;
-      if(e.key==="Escape") closeLB();
-      else if(e.key==="ArrowLeft") openLB(cur-1);
-      else if(e.key==="ArrowRight") openLB(cur+1);
-    });
+    document.querySelector(".vloop__nav--prev").addEventListener("click",function(){nudge(-1);});
+    document.querySelector(".vloop__nav--next").addEventListener("click",function(){nudge(1);});
 
-    /* rail: arrows + drag-to-scroll */
-    var prev=document.querySelector(".vrail__nav--prev"),
-        next=document.querySelector(".vrail__nav--next");
-    function step(){ return (vrail.querySelector(".vcard")||{}).offsetWidth+24 || 260; }
-    function syncNav(){
-      if(!prev) return;
-      prev.disabled=vrail.scrollLeft<8;
-      next.disabled=vrail.scrollLeft+vrail.clientWidth>=vrail.scrollWidth-8;
-    }
-    if(prev){
-      prev.addEventListener("click",function(){vrail.scrollBy({left:-step()*2,behavior:reduce?"auto":"smooth"});});
-      next.addEventListener("click",function(){vrail.scrollBy({left:step()*2,behavior:reduce?"auto":"smooth"});});
-      vrail.addEventListener("scroll",syncNav,{passive:true}); syncNav();
-      addEventListener("resize",syncNav);
-    }
-    var down=false,sx=0,sl=0;
-    vrail.addEventListener("pointerdown",function(e){
-      if(e.pointerType==="touch"||e.button!==0) return;
-      down=true;justDragged=false;sx=e.clientX;sl=vrail.scrollLeft;
-      vrail.style.cursor="grabbing";
+    /* pointer drag-to-scroll (desktop) */
+    var dragging=false,moved=false,sx=0,sl0=0;
+    track.addEventListener("pointerdown",function(e){
+      if(e.pointerType==="touch"||(e.button&&e.button!==0)) return;
+      dragging=true;moved=false;sx=e.clientX;sl0=track.scrollLeft;
     });
-    vrail.addEventListener("pointermove",function(e){
-      if(!down) return;
+    track.addEventListener("pointermove",function(e){
+      if(!dragging) return;
       var d=e.clientX-sx;
-      if(Math.abs(d)>8){ justDragged=true; vrail.scrollLeft=sl-d; }
+      if(Math.abs(d)>5&&!moved){ moved=true; track.classList.add("is-grabbing"); try{track.setPointerCapture(e.pointerId);}catch(_){} }
+      if(moved){ track.scrollLeft=sl0-d; }
     });
-    function endDrag(){ down=false; vrail.style.cursor="grab"; setTimeout(function(){justDragged=false;},0); }
-    vrail.addEventListener("pointerup",endDrag);
-    vrail.addEventListener("pointercancel",endDrag);
-    vrail.addEventListener("pointerleave",function(){ if(down) endDrag(); });
-    vrail.style.cursor="grab";
+    function endDrag(){
+      if(!dragging) return;
+      dragging=false; track.classList.remove("is-grabbing");
+      setTimeout(function(){moved=false;},40);
+    }
+    track.addEventListener("pointerup",endDrag);
+    track.addEventListener("pointercancel",endDrag);
+
+    track.addEventListener("click",function(e){
+      var b=e.target.closest(".vcard__btn"); if(b&&!moved) openPop(+b.dataset.i);
+    });
+
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(measure);
+    setTimeout(measure,60); addEventListener("resize",function(){clearTimeout(track._rt);track._rt=setTimeout(measure,150);});
+
+    /* ---- popup carousel ---- */
+    var pop=document.getElementById("vpop"),
+        pvp=pop.querySelector(".vpop__viewport"),
+        ptrack=document.getElementById("vpop-track"),
+        pthumbs=document.getElementById("vpop-thumbs"),
+        plabel=document.getElementById("vpop-label"),
+        pcta=document.getElementById("vpop-cta"),
+        pcur=0, popFocus=null;
+
+    ptrack.innerHTML=VIDEOS.map(function(v){
+      return '<li class="vpop__slide">'+
+        '<video data-src="assets/video/'+v.slug+'.mp4" poster="assets/video/poster-'+v.slug+'.jpg" '+
+        'playsinline preload="none" controls controlslist="nodownload noremoteplayback noplaybackrate" disablepictureinpicture></video>'+
+        '<button class="vpop__tap" type="button" tabindex="-1" aria-hidden="true"></button></li>';
+    }).join("");
+    pthumbs.innerHTML=VIDEOS.map(function(v,i){
+      return '<li><button type="button" data-i="'+i+'" aria-label="'+v.title+'">'+
+        '<img src="assets/video/poster-'+v.slug+'.webp" alt="" width="60" height="90">'+
+        '<span>'+v.dur+'</span></button></li>';
+    }).join("");
+    var pslides=[].slice.call(ptrack.children),
+        pvids=pslides.map(function(s){return s.querySelector("video");});
+
+    function clearVid(vid){ if(vid.src){ vid.pause(); vid.removeAttribute("src"); vid.load(); } }
+
+    function showSlide(idx,anim){
+      pcur=(idx%N+N)%N;
+      var v=VIDEOS[pcur];
+      pvids.forEach(function(vid,k){ if(k!==pcur) clearVid(vid); });
+      ptrack.style.transition=(anim&&!reduce)?"transform .42s cubic-bezier(.22,.61,.36,1)":"none";
+      ptrack.style.transform="translate3d("+(-pcur*100)+"%,0,0)";
+      var tv=pvids[pcur];
+      if(!tv.src) tv.src=tv.dataset.src;
+      try{tv.currentTime=0;}catch(e){}
+      tv.play().catch(function(){});
+      plabel.textContent=v.kicker+(v.who?(" · "+v.who.name):"");
+      var msg="Olá! Vi o vídeo “"+v.title+"” no site e gostaria de agendar um atendimento"+(v.who?(" com "+v.who.name):"");
+      pcta.href=wa+encodeURIComponent(msg+".");
+      pcta.textContent=v.who?("Agendar com "+v.who.name.split(" ")[0]):"Agendar atendimento";
+      [].forEach.call(pthumbs.querySelectorAll("button"),function(b){
+        var on=+b.dataset.i===pcur; b.classList.toggle("is-on",on); b.setAttribute("aria-current",on?"true":"false");
+      });
+      var act=pthumbs.querySelector("button.is-on");
+      if(act&&act.scrollIntoView) act.scrollIntoView({inline:"center",block:"nearest",behavior:reduce?"auto":"smooth"});
+    }
+    function openPop(idx){
+      if(pop.hidden){ popFocus=document.activeElement; pop.hidden=false; document.body.style.overflow="hidden"; }
+      showSlide(idx,false);
+      document.getElementById("vpop-close").focus();
+    }
+    function closePop(){
+      pvids.forEach(clearVid);
+      pop.hidden=true; document.body.style.overflow="";
+      if(popFocus) popFocus.focus();
+    }
+    document.getElementById("vpop-close").addEventListener("click",closePop);
+    document.getElementById("vpop-prev").addEventListener("click",function(){showSlide(pcur-1,true);});
+    document.getElementById("vpop-next").addEventListener("click",function(){showSlide(pcur+1,true);});
+    pop.addEventListener("click",function(e){ if(e.target===pop||e.target===pvp||e.target.classList.contains("vpop__stagewrap")) closePop(); });
+    pthumbs.addEventListener("click",function(e){
+      var b=e.target.closest("button"); if(b) showSlide(+b.dataset.i,true);
+    });
+    var psMoved=false;
+    pop.querySelectorAll(".vpop__tap").forEach(function(t){
+      t.addEventListener("click",function(){
+        if(psMoved) return;
+        var vid=pvids[pcur]; if(vid.paused) vid.play().catch(function(){}); else vid.pause();
+      });
+    });
+    addEventListener("keydown",function(e){
+      if(pop.hidden) return;
+      if(e.key==="Escape") closePop();
+      else if(e.key==="ArrowLeft") showSlide(pcur-1,true);
+      else if(e.key==="ArrowRight") showSlide(pcur+1,true);
+    });
+    /* swipe inside popup */
+    var psd=false,psx=0;
+    pvp.addEventListener("pointerdown",function(e){
+      psd=true;psMoved=false;psx=e.clientX;
+      ptrack.style.transition="none";
+    });
+    pvp.addEventListener("pointermove",function(e){
+      if(!psd) return;
+      var d=e.clientX-psx;
+      if(Math.abs(d)>8) psMoved=true;
+      if(psMoved) ptrack.style.transform="translate3d(calc("+(-pcur*100)+"% + "+d+"px),0,0)";
+    });
+    function psEnd(e){
+      if(!psd) return; psd=false;
+      var d=(e.clientX||psx)-psx;
+      if(d<-45) showSlide(pcur+1,true);
+      else if(d>45) showSlide(pcur-1,true);
+      else showSlide(pcur,true);
+      setTimeout(function(){psMoved=false;},40);
+    }
+    pvp.addEventListener("pointerup",psEnd);
+    pvp.addEventListener("pointercancel",psEnd);
   }
 
   /* ---------- map facade ---------- */
